@@ -1,0 +1,51 @@
+import ResourceLinks from '@components/resource-links';
+import { Steps, Tabs, Tab } from 'nextra-theme-docs';
+import { Callout } from 'nextra/components';
+
+# Configuração (Qb-core)
+
+Configuração dos sistemas do script para a framework **Qb-Core**.
+
+## Config.lua
+
+<Steps>
+
+### Pré-configuração
+
+Adicione a função abaixo no topo do config.lua, para o acionamento das funções Qb-Core.
+
+```bash
+local QBCore = exports["qb-core"]:GetCoreObject()
+```
+
+### Função de Permissão
+
+Substitua a função "Thony.PermissionFunction" pela função abaixo:
+
+```bash
+Thony.PermissionFunction = function(source,perm)
+    --Server-Side
+    local hasPerm = QBCore.Functions.HasPermission(source, perm)
+    if hasPerm then
+        return true
+    end
+    return false
+end
+```
+
+### Coletar o source do jogador
+
+Substitua a função "Thony.GetSourceFunction" pela função abaixo:
+
+```bash
+Thony.GetSourceFunction = function(id)
+    --Server-Side
+    local source = QBCore.Functions.GetSource(id)
+    if source > 0 then
+        return source
+    end
+    return false
+end
+```
+
+</Steps>

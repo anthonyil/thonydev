@@ -1,0 +1,120 @@
+import ResourceLinks from '@components/resource-links';
+import { Steps, Tabs, Tab } from 'nextra-theme-docs';
+import { Callout } from 'nextra/components';
+
+# Configuração (Creative)
+
+Configuração dos sistemas do script para a framework **Creative(Vrp)**.
+
+## fxmanifest.lua
+
+### shared_script
+
+<Callout type="info">
+
+Adicione **"@vrp/lib/utils.lua"** no inicio para o script reconhecer as funções do vrp. Lembre-se da virgula(,) no final.
+
+</Callout>
+
+<Steps>
+
+### Antes
+
+```bash
+shared_scripts {
+    "@ox_lib/init.lua",
+    "shared-side/utils.lua",
+    "config.lua",
+}
+
+```
+
+### Depois
+
+```bash
+shared_scripts {
+    "@vrp/lib/utils.lua",
+    "@ox_lib/init.lua",
+    "shared-side/utils.lua",
+    "config.lua",
+}
+
+```
+
+</Steps>
+
+
+
+### server_scripts
+
+<Callout type="info">
+
+Adicione **"@vrp/lib/utils.lua"** no inicio para o script reconhecer as funções do vrp. Lembre-se da virgula(,) no final.
+
+</Callout>
+
+<Steps>
+
+### Antes
+```bash
+server_scripts {
+    "server-side/server.lua",
+}
+```
+
+### Depois
+
+```bash
+server_scripts {
+    "@vrp/lib/utils.lua",
+    "server-side/server.lua",
+}
+```
+</Steps>
+
+
+## Config.lua
+
+<Steps>
+
+### Pré-configuração
+
+Adicione as funções abaixo no topo do config.lua, para o acionamento das funções Vrp.
+
+```bash
+local Proxy = module("vrp","lib/Proxy")
+vRP = Proxy.getInterface("vRP")
+```
+
+
+### Função de Permissão
+
+Substitua a função "Thony.PermissionFunction" pela função abaixo:
+
+```bash
+Thony.PermissionFunction = function(source,perm)
+    --Server-Side
+    local user_id = vRP.getUserId(source)
+    if vRP.hasGroup(user_id,perm) then
+        return true
+    end
+    return false
+end
+```
+
+### Coletar o source do jogador
+
+Substitua a função "Thony.GetSourceFunction" pela função abaixo:
+
+```bash
+Thony.GetSourceFunction = function(id)
+    --Server-Side
+    local source = vRP.userSource(id)
+    if source then
+        return source
+    end
+    return false
+end
+```
+
+</Steps>

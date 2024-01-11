@@ -1,0 +1,240 @@
+import ResourceLinks from '@components/resource-links';
+import { Steps, Tabs, Tab } from 'nextra-theme-docs';
+import { Callout } from 'nextra/components';
+
+
+# Configuração
+
+O script foi feito de forma standalone, ou seja, funciona em quaisquer framework. Para isso, é necessario configurar algumas coisas para o funcionamento perfeito do script.
+
+
+## Config.lua
+
+Arquivo de configuração base do script.
+
+<Steps>
+
+### Comando
+
+Coloque o nome do comando para abrir a interface principal do script.
+
+```bash
+Thony.Command = "e3"
+```
+
+### Area
+
+Defina a area maxima que o jogador podera escolher para o script escanear à procura de jogadores/npcs.
+
+```bash
+Thony.MaxArea = 50
+```
+
+### Permissões
+
+Deseja que cada modo do script seja apenas para pessoas especificas? Coloque aqui as permissões que deseja.
+
+<Callout type="info">
+
+Para está parte funcionar, configure a [**Função de Permissão**](../thony_animtogether/Config#função-de-permissão).
+
+</Callout>
+
+```bash
+Thony.Permissions = {
+    default = "", -- e3
+    identifier = "", -- e3 id
+    advanced = "", --e3 ad
+}
+```
+
+### Função de Permissão
+
+<Callout type="warning">
+
+É necessario configurar de acordo com a **função de permissão** da sua base, acesse a area [**Frameworks**](../thony_animtogether/Frameworks) para mais detalhes.
+
+</Callout>
+
+```bash
+Thony.PermissionFunction = function(source,perm)
+    --Server-Side
+    return true
+end
+```
+
+### Buscar source do jogador
+
+<Callout type="warning">
+
+É necessario configurar de acordo com a **função de personagem** da sua base, acesse a area [**Frameworks**](../thony_animtogether/Frameworks) para mais detalhes.
+
+</Callout>
+
+```bash
+Thony.GetSourceFunction = function(id)
+    --Server-Side
+    return false
+end
+```
+
+### Tradução
+
+Traduza o script para o idioma que deseja.
+
+```bash
+Thony.Translate = {
+    ["input"] = {
+        name = "Animação Compartilhada",
+        setAnimation = {"Animação","dancar, tiktok, etc"},
+        setDistance = {"Distância","Coloque a distância:"},
+        setIdentifier = {"Identificador","Coloque os indentificadores: 2,123,12313,4343..."},
+        whoDance = {"Quem dança?","Selecione abaixo quem dança de acordo com a distância."},
+        whoDanceChoices = {"Jogadores","Americanos"},
+        setNpcs = "Incluir Npcs?",
+    },
+    ["notify"] = {
+        notFound =  {"Falha!","Não foi possivel encontrar essa animação."},
+        noEntity =  {"Desculpe!","Não encontrei ninguem proxímo de você."},
+        noControl = {"Falha!","Não conseguimos assumir o controle do Npc."},
+        noSource = {"Aviso!","Não conseguimos encontrar este jogador. #"},
+        noPerm = {"Falha!","Parece que você não possui permissão!"},
+    },
+}
+```
+</Steps>
+
+## Animações
+
+O script pega as animações da sua base, com um simples evento no script principal de animação do seu servidor.
+
+### vrp_animacoes (Vrp)
+
+<Callout type="info">
+
+Coloque este evento no final do client.lua do script **vrp_animacoes**.
+
+</Callout>
+
+```bash
+RegisterNetEvent('thony_animtogether:GetAnimations')
+AddEventHandler('thony_animtogether:GetAnimations',function(cb)
+	local temp = {}
+	for k,v in pairs(animacoes) do
+		if v.nome then
+			local flag = 0
+			if v.flag then
+				flag = v.flag
+			else
+				if v.andar then flag = flag+48 end
+				if v.loop then flag = flag+1 end
+			end
+
+			temp[v.nome] = {animDict = v.dict,animName = v.anim, flag = flag}
+		end
+	end
+	cb(temp) 
+end)
+```
+
+### animacoes (Creative)
+
+<Callout type="info">
+
+Coloque este evento no final do client.lua do script **animacoes**.
+
+</Callout>
+
+```bash
+RegisterNetEvent('thony_animtogether:GetAnimations')
+AddEventHandler('thony_animtogether:GetAnimations',function(cb)
+	local temp = {}
+	for k,v in pairs(animacoes) do
+      local flag = 0
+      if v.flag then
+        flag = v.flag
+      else
+        if v.andar then flag = flag+48 end
+        if v.loop then flag = flag+1 end
+      end
+
+      temp[k] = {animDict = v.dict,animName = v.anim, flag = flag}
+	end
+	cb(temp) 
+end)
+```
+
+### rpemotes
+
+<Callout type="info">
+
+Coloque este evento no final do client/Emote.lua do script **rpemotes**.
+
+</Callout>
+
+```bash
+RegisterNetEvent('thony_animtogether:GetAnimations')
+AddEventHandler('thony_animtogether:GetAnimations',function(cb)
+	local temp = {}
+    for i = 1, #emoteTypes do
+        local emoteType = emoteTypes[i]
+        for emoteName, emoteData in pairs(RP[emoteType]) do
+            local flag = 0
+            if emoteData[1] and emoteData[2] then
+                if emoteData["AnimationOptions"] then
+                    if emoteData["AnimationOptions"].EmoteMoving then flag = flag+48 end
+                    if emoteData["AnimationOptions"].EmoteLoop then flag = flag+1 end
+                end
+    
+                temp[emoteName] = {animDict = emoteData[1],animName = emoteData[2], flag = flag}
+            end
+        end
+    end
+	cb(temp) 
+end)
+```
+
+### scully_emotemenu
+
+<Callout type="info">
+
+Coloque este evento no final do client/main.lua do script **scully_emotemenu**.
+
+</Callout>
+
+```bash
+RegisterNetEvent('thony_animtogether:GetAnimations')
+AddEventHandler('thony_animtogether:GetAnimations',function(cb)
+    local temp = {}
+
+    local checkMenus = {
+        'Emotes',
+        'PropEmotes',
+        'ConsumableEmotes',
+        'DanceEmotes',
+        'SynchronizedEmotes'
+    }
+    
+    for i = 1, #checkMenus do
+        local animType = checkMenus[i]
+        local animList = AnimationList[animType]
+    
+        for emote = 1, #animList do
+            local animation = animList[emote]
+            if animation and (animation.Command and animation.Animation and animation.Dictionary) then
+                local flag = 0
+
+                if animation.Options and animation.Options.Flags then
+           
+                    if animation.Options.Flags.Loop then flag = flag+1 end
+            
+                    if animation.Options.Flags.Move then flag = flag+48 end
+                end
+
+                temp[animation.Command] = {animDict = animation.Dictionary,animName = animation.Animation, flag = flag}
+            end
+        end
+    end
+	cb(temp) 
+end)
+```

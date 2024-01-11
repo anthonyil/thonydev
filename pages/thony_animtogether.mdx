@@ -1,0 +1,80 @@
+import ResourceLinks from '@components/resource-links';
+import { Steps, Tabs, Tab } from 'nextra-theme-docs';
+import { Callout } from 'nextra/components';
+
+# Animação Compartilhada
+
+Um sistema de Animação Sincronizada entre Jogadores e Npcs, dando maior facilidade para shows, gravações, donos de servidores e criadores de conteudo. 
+
+## Instalação
+
+<Steps>
+### Instale todas as dependencias do sistema
+- [ox_lib](https://overextended.dev/ox_lib)
+
+### Baixe a [versão](https://github.com/overextended/ox_target/releases) mais recente ou clone o codígo fonte.
+
+```bash
+git clone https://github.com/overextended/ox_target.git
+```
+
+### Config
+
+As configurações do sistema são baseadas pelo config.lua
+
+```bash
+Thony = {}
+
+Thony.Command = "e3"
+
+Thony.MaxArea = 50
+
+Thony.Permissions = {
+    default = "",
+    identifier = "",
+    advanced = "",
+}
+
+Thony.PermissionFunction = function(source,perm)
+    --Server-Side
+    return true
+end
+
+Thony.GetSourceFunction = function(id)
+    --Server-Side
+    return false
+end
+
+
+Thony.Translate = {
+    ["input"] = {
+        name = "Animação Compartilhada",
+        setAnimation = {"Animação","dancar, tiktok, etc"},
+        setDistance = {"Distância","Coloque a distância:"},
+        setIdentifier = {"Identificador","Coloque os indentificadores: 2,123,12313,4343..."},
+        whoDance = {"Quem dança?","Selecione abaixo quem dança de acordo com a distância."},
+        whoDanceChoices = {"Jogadores","Americanos"},
+        setNpcs = "Incluir Npcs?",
+    },
+    ["notify"] = {
+        notFound =  {"Falha!","Não foi possivel encontrar essa animação."},
+        noEntity =  {"Desculpe!","Não encontrei ninguem proxímo de você."},
+        noControl = {"Falha!","Não conseguimos assumir o controle do Npc."},
+        noSource = {"Aviso!","Não conseguimos encontrar este jogador. #"},
+        noPerm = {"Falha!","Parece que você não possui permissão!"},
+    },
+}
+
+```
+
+</Steps>
+
+## Frameworks Suportadas
+
+Não são necessarias para o funcionamento do thony_animtogether.
+
+- [ox_core](https://github.com/overextended/ox_core)
+- [esx](https://github.com/esx-framework/esx-legacy)
+- [qb-core](https://github.com/qbcore-framework/qb-core)
+- [vrp](https://github.com/vRP-framework/vRP)
+- [creative(vrpex)](https://github.com/OiSouHen/CrensaC)
